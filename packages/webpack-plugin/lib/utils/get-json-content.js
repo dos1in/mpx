@@ -14,7 +14,8 @@ module.exports = function getJSONContent (json, filename, loaderContext, callbac
   async.waterfall([
     (callback) => {
       if (json.src) {
-        resolve(context, json.src, loaderContext, (err, result) => {
+        // 使用不记录dependency的resolve，这里只是读取JSON配置内容，不需要追踪为构建依赖，可以提升缓存利用率
+        resolve(context, json.src, loaderContext, false, (err, result) => {
           if (err) return callback(err)
           const { rawResourcePath: resourcePath } = parseRequest(result)
           fs.readFile(resourcePath, (err, content) => {
