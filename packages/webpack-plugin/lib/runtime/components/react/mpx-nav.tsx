@@ -1,6 +1,5 @@
 /* eslint-disable space-before-function-paren */
 import { useState, useMemo, memo } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StatusBar, processColor, TouchableWithoutFeedback, Image, View, StyleSheet, Text } from 'react-native'
 
 function convertToHex(color?: string) {
@@ -24,12 +23,11 @@ function convertToHex(color?: string) {
 }
 
 const titleHeight = 44
-export function useInnerHeaderHeight(pageConfig: PageConfig) {
-  const safeArea = useSafeAreaInsets()
+export function useInnerHeaderHeight(pageConfig: PageConfig, navigation?: any) {
   if (pageConfig.navigationStyle === 'custom') {
     return 0
   } else {
-    const safeAreaTop = safeArea?.top || 0
+    const safeAreaTop = navigation?.insets?.top || 0
     const headerHeight = safeAreaTop + titleHeight
     return headerHeight
   }
@@ -88,7 +86,7 @@ const BACK_ICON =
 
 const MpxNav = memo(({ pageConfig, navigation }: MpxNavProps) => {
   const [innerPageConfig, setPageConfig] = useState<PageConfig>(pageConfig || {})
-  const safeAreaTop = useSafeAreaInsets()?.top || 0
+  const safeAreaTop = navigation?.insets?.top || 0
 
   navigation.setPageConfig = (config: PageConfig) => {
     setPageConfig(Object.assign({}, innerPageConfig, config))

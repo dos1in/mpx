@@ -545,7 +545,10 @@ export function PageWrapperHOC (WrappedComponent, pageConfig = {}) {
       error('Using pageWrapper requires passing navigation and route')
       return null
     }
-    const headerHeight = useInnerHeaderHeight(currentPageConfig)
+    // android存在第一次打开insets都返回为0情况，后续会触发第二次渲染后正确
+    const safeAreaInsets = useSafeAreaInsets()
+    navigation.insets = safeAreaInsets
+    const headerHeight = useInnerHeaderHeight(currentPageConfig, navigation)
     navigation.layout = getLayoutData(headerHeight)
 
     useEffect(() => {
@@ -578,8 +581,6 @@ export function PageWrapperHOC (WrappedComponent, pageConfig = {}) {
         )
       )
     }
-    // android存在第一次打开insets都返回为0情况，后续会触发第二次渲染后正确
-    navigation.insets = useSafeAreaInsets()
     return withKeyboardAvoidingView(
       createElement(ReactNative.View,
         {
