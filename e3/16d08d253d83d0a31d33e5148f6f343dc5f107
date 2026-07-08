@@ -1,0 +1,23 @@
+packages/api-proxy/src/platform/api/create-selector-query/SelectQuery.js
+  541bd251f4b5c605 199-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "e316d08d253d83d0a31d33e5148f6f343dc5f107",
+  "prompts": {
+    "541bd251f4b5c605": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f416c-1e2a-7bc1-8456-c41d2e04fea6",
+        "model": "gpt-5.5"
+      },
+      "human_author": "doslin",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 2,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
