@@ -109,6 +109,7 @@ let hasVirtualHost
 let isCustomText
 let runtimeCompile
 let rulesRunner
+let noTransAttrsRulesRunner
 let customBuiltInComponentsOpt
 let isUrlRequest
 let templateAssetId
@@ -675,22 +676,27 @@ function parse (template, options) {
     currentElementRuleResult.errorArray.push({ content, loc })
   }
 
-  rulesRunner = getRulesRunner({
-    mode,
-    srcMode,
-    type: 'template',
-    testKey: 'tag',
-    data: {
-      usingComponents,
-      customBuiltInComponents: customBuiltInComponentsOpt
-    },
-    warn: _warn,
-    error: _error,
-    diagnostic: {
-      file: filePath,
-      source: template
-    }
-  })
+  const createRulesRunner = (warn, error) => {
+    return getRulesRunner({
+      mode,
+      srcMode,
+      type: 'template',
+      testKey: 'tag',
+      data: {
+        usingComponents,
+        customBuiltInComponents: customBuiltInComponentsOpt
+      },
+      warn,
+      error,
+      diagnostic: {
+        file: filePath,
+        source: template
+      }
+    })
+  }
+
+  rulesRunner = createRulesRunner(_warn, _error)
+  noTransAttrsRulesRunner = createRulesRunner(_warn, _warn)
 
   const stack = []
   let root
@@ -3035,22 +3041,22 @@ function processNoTransAttrs (el) {
   }
 }
 
-function processReactNoTransAttrsError (el) {
+function processReactNoTransAttrsWarning (el) {
   const isNodeMatch = el._matchStatus === statusEnum.MATCH
   const noTransAttrs = isNodeMatch ? el.attrsList : el.noTransAttrs
-  if (!rulesRunner || !noTransAttrs || !noTransAttrs.length || (isReactComponent(el) && !isNativeMiniTag(el.tag))) return
+  if (!noTransAttrsRulesRunner || !noTransAttrs || !noTransAttrs.length || (isReactComponent(el) && !isNativeMiniTag(el.tag))) return
 
   const transformedEl = Object.assign({}, el)
   transformedEl.attrsList = cloneAttrsList(noTransAttrs)
   transformedEl.attrsMap = makeAttrsMap(transformedEl.attrsList)
   currentEl = el
-  rulesRunner(transformedEl)
+  noTransAttrsRulesRunner(transformedEl)
   const transformedAttrNames = new Set(transformedEl.attrsList.map(({ name }) => name))
 
   noTransAttrs.forEach(({ name }) => {
     if (!transformedAttrNames.has(name)) {
       const suggestion = isNodeMatch ? `@_${mode}` : `${name}@_${mode}`
-      error$1(
+      warn$1(
         `React Native mode "${mode}" does not support untransformed attribute "${name}". ` +
         `Use implicit mode matching, such as "${suggestion}", to enable platform conversion.`
       )
@@ -3152,7 +3158,7 @@ function processElement (el, root, options, meta) {
   }
 
   if (isReact(mode)) {
-    processReactNoTransAttrsError(el)
+    processReactNoTransAttrsWarning(el)
   }
 
   if (rulesRunner && el._matchStatus !== statusEnum.MATCH) {

@@ -6,7 +6,7 @@
 
 根据表达式的值的 [truthiness](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy) 来有条件地渲染元素。在切换时元素及它的数据绑定 / 组件被销毁并重建。 **注意：如果元素是 `<block/>`, 注意它并不是一个组件，它仅仅是一个包装元素，不会在页面中做任何渲染，只接受控制属性**。
 
-::: danger
+::: warning
 当和 `wx:if` 一起使用时，`wx:for` 的优先级比 `wx:if` 更高。详见列[表渲染教程](../guide/basic/list-render.md)
 :::
 
@@ -727,7 +727,7 @@ capture-catch中断捕获阶段和取消冒泡阶段
 ```
 
 ::: danger
-`@mode` 会跳过属性的平台语法转换。跨端输出 React Native 时，框架基础组件上需要转换的属性应使用 `@_mode`，例如 `bind:scroll@_ios|_android|_harmony`；当现有平台规则可确定显式条件编译属性需要改名、删除或不受支持时，编译器将给出对应诊断。无需转换的目标平台属性，以及直接传给 React 组件的属性不受此检测影响。
+`@mode` 会跳过属性的平台语法转换。跨端输出 React Native 时，框架基础组件上需要转换的属性应使用 `@_mode`，例如 `bind:scroll@_ios|_android|_harmony`；当现有平台规则可确定显式条件编译属性需要改名、删除或不受支持时，编译器将给出警告，但不会中断构建。无需转换的目标平台属性，以及直接传给 React 组件的属性不受此检测影响。
 :::
 
 ### 节点中使用 {#use-in-node}

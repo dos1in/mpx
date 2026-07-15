@@ -179,55 +179,77 @@ describe('cross-platform syntax warning', function () {
     expect(errorFn).not.toHaveBeenCalled()
   })
 
-  it('should error for untransformed React Native events with explicit mode matching', function () {
+  it('should warn for untransformed React Native events with explicit mode matching', function () {
     const input = '<view mpxTagName@ios|android|harmony="scroll-view" bind:scroll@ios|android|harmony="onPageScroll"></view>'
     compileTemplate(input, { mode: 'ios' })
-    expect(errorFn).toHaveBeenCalledWith(
+    expect(warnFn).toHaveBeenCalledWith(
       expect.stringContaining('React Native mode "ios" does not support untransformed attribute "bind:scroll". Use implicit mode matching, such as "bind:scroll@_ios", to enable platform conversion.')
     )
+    expect(errorFn).not.toHaveBeenCalled()
   })
 
-  it('should error for untransformed React Native events on explicitly matched native nodes', function () {
+  it('should warn for untransformed React Native events on explicitly matched native nodes', function () {
     const input = '<scroll-view @ios bind:scroll="onPageScroll"></scroll-view>'
     compileTemplate(input, { mode: 'ios' })
-    expect(errorFn).toHaveBeenCalledWith(
+    expect(warnFn).toHaveBeenCalledWith(
       expect.stringContaining('React Native mode "ios" does not support untransformed attribute "bind:scroll". Use implicit mode matching, such as "@_ios", to enable platform conversion.')
     )
+    expect(errorFn).not.toHaveBeenCalled()
   })
 
-  it('should error for React Native event aliases that require platform conversion', function () {
+  it('should warn for React Native event aliases that require platform conversion', function () {
     const input = '<view bindlongtap@ios="onLongTap"></view>'
     compileTemplate(input, { mode: 'ios' })
-    expect(errorFn).toHaveBeenCalledWith(
+    expect(warnFn).toHaveBeenCalledWith(
       expect.stringContaining('React Native mode "ios" does not support untransformed attribute "bindlongtap".')
+    )
+    expect(errorFn).not.toHaveBeenCalled()
+  })
+
+  it('should downgrade explicit React Native platform errors to warnings', function () {
+    const input = '<view bindanimationstart@ios="onAnimationStart"></view>'
+    compileTemplate(input, { mode: 'ios' })
+    expect(warnFn).toHaveBeenCalledWith(
+      expect.stringContaining('React native environment does not support [animationstart] event!'),
+      undefined
+    )
+    expect(errorFn).not.toHaveBeenCalled()
+  })
+
+  it('should keep implicit React Native platform errors unchanged', function () {
+    const input = '<view bindanimationstart@_ios="onAnimationStart"></view>'
+    compileTemplate(input, { mode: 'ios' })
+    expect(errorFn).toHaveBeenCalledWith(
+      expect.stringContaining('React native environment does not support [animationstart] event!'),
+      undefined
     )
   })
 
-  it('should not error for React Native events with implicit mode matching', function () {
+  it('should not warn for React Native events with implicit mode matching', function () {
     const input = '<view mpxTagName@ios|android|harmony="scroll-view" bind:scroll@_ios|_android|_harmony="onPageScroll"></view>'
     const output = compileTemplate(input, { mode: 'ios' })
     expect(output).toContain('bindscroll')
-    expect(errorFn).not.toHaveBeenCalled()
+    expect(warnFn).not.toHaveBeenCalled()
   })
 
-  it('should not error for attributes passed directly to React components', function () {
+  it('should not warn for attributes passed directly to React components', function () {
     const input = '<custom-view bind:scroll@ios="onPageScroll"></custom-view>'
     compileTemplate(input, { mode: 'ios' })
-    expect(errorFn).not.toHaveBeenCalled()
+    expect(warnFn).not.toHaveBeenCalled()
   })
 
-  it('should not error for target platform attributes that do not require conversion', function () {
+  it('should not warn for target platform attributes that do not require conversion', function () {
     const input = '<text numberOfLines@ios="{{2}}"></text>'
     const output = compileTemplate(input, { mode: 'ios' })
     expect(output).toContain('numberOfLines')
-    expect(errorFn).not.toHaveBeenCalled()
+    expect(warnFn).not.toHaveBeenCalled()
   })
 
-  it('should not error for normalized React Native events with explicit mode matching', function () {
+  it('should not warn for normalized React Native events with explicit mode matching', function () {
     const input = '<view mpxTagName@ios|android|harmony="scroll-view" bindscroll@ios|android|harmony="onPageScroll"></view>'
     const output = compileTemplate(input, { mode: 'ios' })
     expect(output).toContain('bindscroll')
-    expect(errorFn).not.toHaveBeenCalled()
+    expect(warnFn).not.toHaveBeenCalled()
   })
 
   it('should handle conditional compilation attributes correctly', function () {
