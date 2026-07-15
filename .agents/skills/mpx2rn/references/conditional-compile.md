@@ -120,6 +120,19 @@
 </template>
 ```
 
+需要平台转换的 Mpx 事件语法同样必须使用隐式声明。以下写法中的 `bind:scroll` 会通过平台规则转换为 RN 组件使用的 `bindscroll`：
+
+```html
+<template>
+  <view
+    mpxTagName@ios|android|harmony="scroll-view"
+    bind:scroll@_ios|_android|_harmony="onPageScroll"
+  ></view>
+</template>
+```
+
+如果写成 `bind:scroll@ios|android|harmony`，显式声明会跳过平台转换；当现有平台规则可确定框架基础组件上的属性需要改名、删除或不受支持时，编译器将给出对应诊断。节点级显式条件编译同样会跳过整个节点的平台转换。只有属性本身已经是目标平台支持且无需转换的最终语法，或属性直接传给 React 组件时，才应使用显式声明。
+
 ```html
 <template>
   <!-- 标签名动态替换，原平台输出 view，而在 RN 平台输出时，标签名将被替换为 mpx-custom-view -->

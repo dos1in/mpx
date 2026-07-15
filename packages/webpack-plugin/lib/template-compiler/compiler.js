@@ -3035,6 +3035,29 @@ function processNoTransAttrs (el) {
   }
 }
 
+function processReactNoTransAttrsError (el) {
+  const isNodeMatch = el._matchStatus === statusEnum.MATCH
+  const noTransAttrs = isNodeMatch ? el.attrsList : el.noTransAttrs
+  if (!rulesRunner || !noTransAttrs || !noTransAttrs.length || (isReactComponent(el) && !isNativeMiniTag(el.tag))) return
+
+  const transformedEl = Object.assign({}, el)
+  transformedEl.attrsList = cloneAttrsList(noTransAttrs)
+  transformedEl.attrsMap = makeAttrsMap(transformedEl.attrsList)
+  currentEl = el
+  rulesRunner(transformedEl)
+  const transformedAttrNames = new Set(transformedEl.attrsList.map(({ name }) => name))
+
+  noTransAttrs.forEach(({ name }) => {
+    if (!transformedAttrNames.has(name)) {
+      const suggestion = isNodeMatch ? `@_${mode}` : `${name}@_${mode}`
+      error$1(
+        `React Native mode "${mode}" does not support untransformed attribute "${name}". ` +
+        `Use implicit mode matching, such as "${suggestion}", to enable platform conversion.`
+      )
+    }
+  })
+}
+
 function initCrossPlatformConfig () {
   // 定义平台与前缀的双向映射关系
   const platformPrefixMap = {
@@ -3126,6 +3149,10 @@ function processElement (el, root, options, meta) {
 
   if (runtimeCompile && options.dynamicTemplateRuleRunner) {
     options.dynamicTemplateRuleRunner(el, options, config[mode])
+  }
+
+  if (isReact(mode)) {
+    processReactNoTransAttrsError(el)
   }
 
   if (rulesRunner && el._matchStatus !== statusEnum.MATCH) {

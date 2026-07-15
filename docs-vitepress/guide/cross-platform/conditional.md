@@ -313,6 +313,24 @@ module.exports = {
 ```
 在对应的平台前加一个_，例如@_ali、@_swan、@_tt等，使用该隐式规则仅有条件编译能力，节点属性语法转换能力依旧。
 
+跨端输出 RN 时，框架基础组件上需要转换的属性也需要使用隐式属性条件编译。如果使用显式属性条件编译，属性会跳过平台转换；当现有平台规则可确定属性需要改名、删除或不受支持时，编译器将给出对应诊断。无需转换的目标平台属性，以及直接传给 React 组件的属性不受此检测影响。
+
+```html
+<!-- 错误：bind:scroll 跳过平台转换，无法转换为 RN 组件使用的 bindscroll -->
+<view
+  mpxTagName@ios|android|harmony="scroll-view"
+  bind:scroll@ios|android|harmony="onPageScroll"
+></view>
+
+<!-- 正确：使用隐式属性条件编译，保留平台转换能力 -->
+<view
+  mpxTagName@ios|android|harmony="scroll-view"
+  bind:scroll@_ios|_android|_harmony="onPageScroll"
+></view>
+```
+
+节点级显式条件编译也会跳过整个节点的平台转换，例如 `<scroll-view @ios bind:scroll="onPageScroll">`。框架基础组件节点需要保留平台转换时，应使用 `@_ios` 等隐式节点条件编译。
+
 有时候我们不仅需要对节点属性进行条件编译，可能还需要对节点标签进行条件编译。
 
 为此，我们支持了一个特殊属性 `mpxTagName`，如果节点存在这个属性，我们会在最终输出时将节点标签修改为该属性的值，配合属性维度条件编译，即可实现对节点标签进行条件编译，例如在百度环境下希望将某个 view 标签替换为 cover-view，我们可以这样写：
@@ -430,4 +448,3 @@ env 属性维度条件编译使用 `:` 符号与 mode 进行组合，格式为 `
 ```
 
 通过结合使用 mode 和 env 的条件编译，我们可以更精细地控制代码在不同平台和不同业务环境下的行为，实现真正的一套代码多端多环境运行。
-

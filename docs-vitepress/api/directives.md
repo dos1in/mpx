@@ -726,6 +726,10 @@ capture-catch中断捕获阶段和取消冒泡阶段
 </button>
 ```
 
+::: danger
+`@mode` 会跳过属性的平台语法转换。跨端输出 React Native 时，框架基础组件上需要转换的属性应使用 `@_mode`，例如 `bind:scroll@_ios|_android|_harmony`；当现有平台规则可确定显式条件编译属性需要改名、删除或不受支持时，编译器将给出对应诊断。无需转换的目标平台属性，以及直接传给 React 组件的属性不受此检测影响。
+:::
+
 ### 节点中使用 {#use-in-node}
 同时，该指令也可以作用在单个节点上，来对节点进行跨平台条件判断。
 
@@ -810,4 +814,3 @@ env 也可在单个节点上进行条件编译：
 ```html
 <view mpxTagName@swan="cover-view">will be cover-view in swan</view>
 ```
-
