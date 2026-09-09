@@ -1,0 +1,23 @@
+packages/webpack-plugin/test/runtime/react-native/mpx-view-gradient.spec.ts
+  1cd08c0c41623c94 105-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "5a9c82525ddd9e2691940a41641d61b76f5b7f3c",
+  "prompts": {
+    "1cd08c0c41623c94": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0840a-b23f-7042-89c0-a4111d9fe441",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "doslin",
+      "messages": [],
+      "total_additions": 54,
+      "total_deletions": 1,
+      "accepted_lines": 53,
+      "overriden_lines": 0
+    }
+  }
+}
